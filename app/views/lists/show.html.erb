@@ -1,4 +1,54 @@
 <%= render 'navbar'%>
+<% arr=[] %>
+<% @movies.each do |movie| %>
+  <% arr << movie.title %>
+<% end %>
+<div class="container">
+  <h1 class="text-center mt-4 mb-0"><%= @list.name %></h1>
+  <div class="row justify-content-end">
+    <!-- <button class="btn btn-primary mt-0 mb-0" id="new-movie-button" style="">Add new movie to list</button> -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newMovieModal">
+      Add new movie to list
+    </button>
+  </div>
+  <div class = "row">
+    <% @list.movies.each do |movie| %>
+      <div class="movie-card col-6 col-lg-4 mt-3 p-3 border">
+        <div class="movie-container row flex-column">
+          <%= image_tag "#{movie.poster_url}", alt: "Poster", width: 200, class: "col"%>
+          <p class="col text-center h5 p-2">
+            <%= movie.title%>
+            <%= movie.rating %>
+            <%= link_to bookmark_path(@list.bookmarks.select {|bookmark| bookmark.movie_id == movie.id}[0]), method: :delete do%>
+              <i class="fas fa-trash"></i>
+            <% end %>
+          </p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
 
-<h1><%= @list.name %></h1>
-<%= @movie.all %>
+
+<div class="modal fade" id="newMovieModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Select Movie</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="new-movie-form">
+          <%= simple_form_for [@list, @bookmark] do |f| %>
+            <%= f.input :comment %>
+            <%= f.association :movie, input_html: {multiple: true, class: "multiple-select"}, include_hidden: false %>
+            <%= f.submit "Add Movie" , class: "btn btn-lg btn-primary" %>
+            <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
